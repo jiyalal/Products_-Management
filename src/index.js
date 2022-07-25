@@ -13,8 +13,8 @@ mongoose.connect("mongodb+srv://jiyalaltyagi:6PkFJWQJt7HgmggH@cluster0.8arzf.mon
     .then(() => console.log("HEY.. 😍😍 mongoDB is connected "))
     .catch((error) => console.log(error)) 
 
-app.use("/", route)
-
-const PORT = process.env.PORT || 3000
+app.use("/", route) 
+ 
+const PORT = process.env.PORT || 4000
 
 app.listen(PORT, function () { console.log(`Express is running on port ${PORT}`) })

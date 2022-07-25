@@ -1,6 +1,9 @@
 const userModel = require("../model/userModel")  // importing the module that contains the user schema
 const jwt = require('jsonwebtoken')
 
+
+let emailRegex = /^[a-z]{1}[a-z0-9._]{1,100}[@]{1}[a-z]{2,15}[.]{1}[a-z]{2,10}$/
+
 const createUser=async function(req,res){
     try{
         let data=req.body
@@ -22,7 +25,7 @@ const loginUser = async function (req, res) {
 
         let user = await userModel.findOne( { email: email, password: password } )  // to find that particular user document.
         if ( !user ) return res.status(401).send({ status: false, msg: "Email or password is incorrect." })  // if the user document isn't found in the database.
-        let data=user._id
+        
         let token = jwt.sign(  // --> to generate the jwt token
             {
                 userId: user._id.toString(),                            // --> payload
@@ -31,9 +34,11 @@ const loginUser = async function (req, res) {
             },
             "Bhushan-Jiyalal-Ritesh-Himashu"                             // --> secret key
         )
+        let data={userId:user._id,
+                   token:token}
 
         res.setHeader("x-api-key", token)  // to send the token in the header of the browser used by the user.
-        return res.status(200).send({ status: true, message: 'Success', data: token })  // token is shown in the response body.
+        return res.status(200).send({ status: true, message: 'User login successfull', data: data })  // token is shown in the response body.
     } catch (err) {
         return res.status(500).send({ status: false, err: err.message })
     }

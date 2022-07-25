@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
     }, // encrypted password
     address: {
         shipping: {
-            street: {
+            street: { 
                 type: String,
                 required: true
             },
