@@ -3,7 +3,9 @@ const jwt = require('jsonwebtoken')
 const validator = require('validator')
 const mongoose = require('mongoose')
 
-
+const isValidObjectId = function(ObjectId){
+    return mongoose.Types.ObjectId.isValid(ObjectId)
+    }
 let emailRegex = /^[a-z]{1}[a-z0-9._]{1,100}[@]{1}[a-z]{2,15}[.]{1}[a-z]{2,10}$/
 
 const createUser=async function(req,res){
@@ -15,7 +17,7 @@ const createUser=async function(req,res){
 
     }
 }
-
+//=========================================== [LOGIN USER] ======================================================
 const loginUser = async function (req, res) {
     try {
         let email = req.body.email
@@ -52,14 +54,14 @@ const getUserdata = async function (req, res) {
 
     try {
         let userId = req.params.userId
-            (!isValidObjctId(userId))
+        if(!isValidObjectId(userId))
         return res.status(400).send({ status: false, message: "UserId is invalid" })
 
-        let finddata = await userModel.findById(userId)
-
+        let finddata = await userModel.findById(userId).select({address:1,_id:1,fname:1,lname:1,email:1,profileImage:1,phone:1,
+                                             password:1,createdAt:true,updatedAt:true,__v:1})
         if (!finddata) return res.status(404).send({ status: false, message: "No user found" })
 
-        return res.status(200).send({ status: true, message: "User profile details, data:finddata" })
+        return res.status(200).send({ status: true, message: "User profile details, data:finddata",data:finddata })
     }
     catch (err) {
         return res.status(500).send({ status: false, message: err.message })

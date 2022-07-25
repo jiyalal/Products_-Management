@@ -29,6 +29,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     }, // encrypted password
+    createdAt:{type:Date},
+    updatedAt:{type:Date},
     address: {
         shipping: {
             street: { 
