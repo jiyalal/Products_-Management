@@ -1,5 +1,15 @@
-const userModel = require("../models/userModel")  // importing the module that contains the user schema
+const userModel = require("../model/userModel")  // importing the module that contains the user schema
 const jwt = require('jsonwebtoken')
+
+const createUser=async function(req,res){
+    try{
+        let data=req.body
+        let userCreated = await userModel.create(data)
+        return res.status(201).send({ status: true, message: 'Success', data: userCreated })
+    }catch(err){
+
+    }
+}
 
 const loginUser = async function (req, res) {
     try {
@@ -28,3 +38,5 @@ const loginUser = async function (req, res) {
         return res.status(500).send({ status: false, err: err.message })
     }
 }
+
+module.exports = { createUser, loginUser } 
