@@ -1,23 +1,75 @@
 const userModel = require("../model/userModel")  // importing the module that contains the user schema
 const jwt = require('jsonwebtoken')
-const validator = require('validator')
+const { isValidRequest, isValid, emailRegex, phoneRegex, passRegex } = require('../validators/validator')
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt');
 
 
-let emailRegex = /^[a-z]{1}[a-z0-9._]{1,100}[@]{1}[a-z]{2,15}[.]{1}[a-z]{2,10}$/
+const createUser = async function (req, res) {
+    try
+    {
+        let data = req.body
 
-const createUser=async function(req,res){
-    try{
-        let data=req.body
-        let userCreated = await userModel.create(data)
+        if (!isValidRequest(data))
+        {
+            return res.status(400).send({ status: false, message: "Please Enter your Details to Resistor" })
+        }
+        const { fname, lname, email, profileImage, phone, password, address, billing } = data
+
+        if (!isValid(fname))
+        {
+            return res.status(400).send({ status: false, message: "please provide the first name" })
+        }
+        if (!isValid(lname))
+        {
+            return res.status(400).send({ status: false, message: "please provide the last name" })
+        }
+        if (!emailRegex.test(email))
+        {
+            return res.status(400).send({ status: false, message: "please enter valide email" })
+        }
+        const foundEmail = await userModel.findOne({ email })
+        if (foundEmail)
+        {
+            return res.status(409).send({ status: false, message: "HYE..😐😐 this email is already present " })
+        }
+
+        if (!phoneRegex.test(phone))
+        {
+            return res.status(400).send({ status: false, message: "please enter valid phone number" })
+        }
+        const foundPhone = await userModel.findOne({ phone })
+
+        if (foundPhone)
+        {
+            return res.status(409).send({ status: false, message: "HYE..😐😐 this phone number is already present " })
+        }
+        if (!passRegex.test(password))
+        {
+            return res.status(400).send({ status: false, message: "please enter valide password" })
+        }
+        let saltpassword = req.body.password
+        const saltRounds = 10
+        data["password"] = await bcrypt.hash(password, saltRounds);
+
+
+        const user = {
+            fname, lname, email, profileImage, phone, password, address, billing
+        }
+
+        let userCreated = await userModel.create(user)
         return res.status(201).send({ status: true, message: 'Success', data: userCreated })
-    } catch (err) {
+    } catch (err)
+    {
+        cons.log(err)
+        res.status(500).send({ message: err.message })
 
     }
 }
 
 const loginUser = async function (req, res) {
-    try {
+    try
+    {
         let email = req.body.email
         let password = req.body.password
         if (!email || !password) return res.status(400).send({ status: false, msg: "Provide the email and password to login." })  // if either email, password or both not present in the request body.
@@ -25,9 +77,9 @@ const loginUser = async function (req, res) {
         if (!emailRegex.test(email))  // --> email should be provided in right format
             return res.status(400).send({ status: false, message: "Please enter a valid emailId. ⚠️" })
 
-        let user = await userModel.findOne( { email: email, password: password } )  // to find that particular user document.
-        if ( !user ) return res.status(401).send({ status: false, msg: "Email or password is incorrect." })  // if the user document isn't found in the database.
-        
+        let user = await userModel.findOne({ email: email, password: password })  // to find that particular user document.
+        if (!user) return res.status(401).send({ status: false, msg: "Email or password is incorrect." })  // if the user document isn't found in the database.
+
         let token = jwt.sign(  // --> to generate the jwt token
             {
                 userId: user._id.toString(),                            // --> payload
@@ -36,12 +88,15 @@ const loginUser = async function (req, res) {
             },
             "Bhushan-Jiyalal-Ritesh-Himashu"                             // --> secret key
         )
-        let data={userId:user._id,
-                   token:token}
+        let data = {
+            userId: user._id,
+            token: token
+        }
 
         res.setHeader("x-api-key", token)  // to send the token in the header of the browser used by the user.
         return res.status(200).send({ status: true, message: 'User login successfull', data: data })  // token is shown in the response body.
-    } catch (err) {
+    } catch (err)
+    {
         return res.status(500).send({ status: false, err: err.message })
     }
 }
@@ -50,7 +105,8 @@ const loginUser = async function (req, res) {
 
 const getUserdata = async function (req, res) {
 
-    try {
+    try
+    {
         let userId = req.params.userId
             (!isValidObjctId(userId))
         return res.status(400).send({ status: false, message: "UserId is invalid" })
@@ -61,7 +117,8 @@ const getUserdata = async function (req, res) {
 
         return res.status(200).send({ status: true, message: "User profile details, data:finddata" })
     }
-    catch (err) {
+    catch (err)
+    {
         return res.status(500).send({ status: false, message: err.message })
     }
 }

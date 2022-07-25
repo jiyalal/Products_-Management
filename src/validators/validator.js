@@ -5,6 +5,14 @@ const isValid = function (value) {
     return true;
 }
 
+const isValidRequest = function (data) {
+    if (Object.keys(data).length == 0) return false;
+    return true;
+  };
+  const isValidObjectId = function(ObjectId){
+    return mongoose.Types.ObjectId.isValid(ObjectId)
+ };
+
 
 // a function is defined to validate the title provided in the request body
 
@@ -19,4 +27,4 @@ let passRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,15}
 
 
 // exporting the variables defined in the module
-module.exports = { isValid, isValidTitle, nameRegex, emailRegex, phoneRegex, passRegex}
+module.exports = { isValid,nameRegex, emailRegex, phoneRegex, passRegex,isValidRequest}

@@ -2,10 +2,6 @@ const jwt = require("jsonwebtoken");  // importing the jsonwebtoken so as to aut
 const userModel = require("../model/userModel");
 const mongoose = require('mongoose');
 
-const isValidObjectId = function(ObjectId){
-return mongoose.Types.ObjectId.isValid(ObjectId)
-}
-
 
 const myFunc = token => {
     return jwt.verify(token, 'Bhushan-Jiyalal-Ritesh-Himashu', (err, decode) => {
