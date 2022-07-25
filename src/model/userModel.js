@@ -1,9 +1,6 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose"); 
 
-const useSchema = new mongoose.Schema({
-
-
-
+const userSchema = new mongoose.Schema({
     fname: {
         type: String,
         required: true,
@@ -21,18 +18,16 @@ const useSchema = new mongoose.Schema({
     },
     profileImage: {
         type: String,
-        required: true,
+        required: true
     }, // s3 link
     phone: {
-        typr: String,
+        type: String,
         required: true,
         unique: true
     },
     password: {
         type: String,
         required: true,
-        minLen: 8,
-        maxLen: 15
     }, // encrypted password
     address: {
         shipping: {
@@ -64,8 +59,8 @@ const useSchema = new mongoose.Schema({
             }
         }
     },
-    createdAt: { timestamp },
-    updatedAt: { timestamp }
-})
+},
+{ timestamps: true }
+);
 
-module.exports = mongoose.module("user,userSchema")
+module.exports = mongoose.model("User", userSchema);
