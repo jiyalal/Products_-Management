@@ -40,16 +40,27 @@ const createUser = async function (req, res) {
         if (!passRegex.test(password)) {
             return res.status(400).send({ status: false, message: "please enter valide password" })
         }
+<<<<<<< Updated upstream
         const salt = bcrypt.genSaltSync(10);
         const encryptPassword = bcrypt.hashSync(password, salt);
 
         const user = {
             fname, lname, email, profileImage, phone, password:encryptPassword, address, billing
+=======
+    
+        const user = {
+             fname, lname, email, profileImage, phone, 
+>>>>>>> Stashed changes
         }
 
         let userCreated = await userModel.create(user)
         return res.status(201).send({ status: true, message: 'Success', data: userCreated })
+<<<<<<< Updated upstream
     } catch (err) {
+=======
+    } catch (err)
+    {
+>>>>>>> Stashed changes
         console.log(err)
         res.status(500).send({ message: err.message })
 
