@@ -12,7 +12,7 @@ const createUser = async function (req, res) {
         if (!isValidRequest(data)) {
             return res.status(400).send({ status: false, message: "Please Enter your Details to Resistor" })
         }
-        const { fname, lname, email, profileImage, phone, password, address, billing } = data
+        const { fname, lname, email, profileImage, phone, password, address } = data
 
         if (!isValid(fname)) {
             return res.status(400).send({ status: false, message: "please provide the first name" })
@@ -40,27 +40,34 @@ const createUser = async function (req, res) {
         if (!passRegex.test(password)) {
             return res.status(400).send({ status: false, message: "please enter valide password" })
         }
-<<<<<<< Updated upstream
         const salt = bcrypt.genSaltSync(10);
         const encryptPassword = bcrypt.hashSync(password, salt);
 
-        const user = {
-            fname, lname, email, profileImage, phone, password:encryptPassword, address, billing
-=======
+        if(!isValidRequest(address)){
+            return res.status(400).send({ status: false, message: "please enter address " })
+        }
+
+        const { shipping, billing} = address
+
+        if(!(isValid(shipping.street) && isValid(shipping.city) && isValid(shipping.pincode))){
+            return res.status(400).send({ status: false, message: "please enter fields of shipping" })
+
+        }
+
+        if(!(isValid(billing.street) && isValid(billing.city) && isValid(billing.pincode))){
+            return res.status(400).send({ status: false, message: "please enter fields of billing" })
+
+        }
     
+
+
         const user = {
-             fname, lname, email, profileImage, phone, 
->>>>>>> Stashed changes
+            fname, lname, email, profileImage, phone, password:encryptPassword, address
         }
 
         let userCreated = await userModel.create(user)
         return res.status(201).send({ status: true, message: 'Success', data: userCreated })
-<<<<<<< Updated upstream
     } catch (err) {
-=======
-    } catch (err)
-    {
->>>>>>> Stashed changes
         console.log(err)
         res.status(500).send({ message: err.message })
 
