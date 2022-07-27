@@ -1,6 +1,6 @@
 const userModel = require("../model/userModel")  // importing the module that contains the user schema
 const jwt = require('jsonwebtoken')
-const { isValidRequest, isValid, emailRegex, phoneRegex, passRegex } = require('../validators/validator')
+const { isValidRequest,isValidObjectId,isValid, emailRegex, phoneRegex, passRegex } = require('../validators/validator')
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt');
 
@@ -12,7 +12,7 @@ const createUser = async function (req, res) {
         if (!isValidRequest(data)) {
             return res.status(400).send({ status: false, message: "Please Enter your Details to Resistor" })
         }
-        const { fname, lname, email, profileImage, phone, password, address } = data
+        const { fname, lname, email, phone, password, address } = data
 
         if (!isValid(fname)) {
             return res.status(400).send({ status: false, message: "please provide the first name" })
