@@ -1,3 +1,5 @@
+const mongoose = require("mongoose")
+
 // a function is defined to validate the data provided in the request body
 const isValid = function (value) {
     if (typeof value === 'undefined' || value === null) return false
@@ -27,4 +29,4 @@ let passRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,15}
 
 
 // exporting the variables defined in the module
-module.exports = { isValid,nameRegex, emailRegex, phoneRegex, passRegex,isValidRequest}
+module.exports = { isValid,nameRegex,isValidObjectId, emailRegex, phoneRegex, passRegex,isValidRequest}
