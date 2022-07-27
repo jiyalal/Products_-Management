@@ -31,36 +31,36 @@ const userSchema = new mongoose.Schema({
     }, // encrypted password
     createdAt:{type:Date},
     updatedAt:{type:Date},
-    // address: {
-    //     shipping: {
-    //         street: { 
-    //             type: String,
-    //             required: true
-    //         },
-    //         city: {
-    //             type: String,
-    //             required: true
-    //         },
-    //         pincode: {
-    //             type: Number,
-    //             required: true
-    //         }
-    //     },
-    //     billing: {
-    //         street: {
-    //             type: String,
-    //             required: true
-    //         },
-    //         city: {
-    //             type: String,
-    //             required: true
-    //         },
-    //         pincode: {
-    //             type: Number,
-    //             required: true
-    //         }
-    //     }
-    // },
+    address: {
+        shipping: {
+            street: { 
+                type: String,
+                required: true
+            },
+            city: {
+                type: String,
+                required: true
+            },
+            pincode: {
+                type: Number,
+                required: true
+            }
+        },
+        billing: {
+            street: {
+                type: String,
+                required: true
+            },
+            city: {
+                type: String,
+                required: true
+            },
+            pincode: {
+                type: Number,
+                required: true
+            }
+        }
+    },
 },
 { timestamps: true }
 );
