@@ -21,6 +21,7 @@ const isValidRequest = function (data) {
 
 
 // Regex(s) used for the validation of different keys
+let priceRegex=/^(\d*([.,](?=\d{3}))?\d+)+((?!\2)[.,]\d\d)?$/
 let nameRegex = /^[.a-zA-Z\s]+$/
 let emailRegex = /^[a-z]{1}[a-z0-9._]{1,100}[@]{1}[a-z]{2,15}[.]{1}[a-z]{2,10}$/
 let phoneRegex = /^(\+91[\-\s]?)?[0]?(91)?[6789]\d{9}$/
@@ -29,4 +30,4 @@ let passRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,15}
 
 
 // exporting the variables defined in the module
-module.exports = { isValid,nameRegex,isValidObjectId, emailRegex, phoneRegex, passRegex,isValidRequest}
+module.exports = { isValid,nameRegex,isValidObjectId, emailRegex, phoneRegex, passRegex,isValidRequest,priceRegex}

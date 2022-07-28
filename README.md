@@ -182,7 +182,8 @@ Send [form-data](https://developer.mozilla.org/en-US/docs/Web/API/FormData)
 
 ## FEATTURE II - Product
 ### Models
-- Product Model
+- Product Model 
+{title,description,price,currencyId,currencyFormat,isFreeShipping,productImage,style,availableSizes,installments}
 ```yaml
 { 
   title: {string, mandatory, unique},

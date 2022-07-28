@@ -4,6 +4,8 @@ const userController = require("../controller/userController")
 const productController = require("../controller/productController")
 const middleware=require("../Middleware/commonMid")
 
+
+
 //=====================[ USER API'S ]=========================
 router.post('/register', userController.createUser)
 router.post('/login', userController.loginUser)
@@ -12,9 +14,13 @@ router.put('/user/:userId/profile',middleware.authenticate,middleware.authForPar
 
 //===================[ PRODUCT API'S]=========================
 router.post('/products',productController.createProduct) //rites
+<<<<<<< HEAD
 router.get('/products') //jiya lal
+=======
+router.get('/products',productController.getProduct) //jiya lal
+>>>>>>> d3ade3d8cd5f0e41946e68ea889a9eaa75486c9c
 router.get('/products/:productId')// jiya lal
-router.put('/products/:productId') // bhushan
+router.put('/products/:productId',productController.updateProduct) // bhushan
 router.delete('/products/:productId',productController.deleteProduct) // himashu
 
 //====================[CART API'S]============================
@@ -22,7 +28,7 @@ router.delete('/products/:productId',productController.deleteProduct) // himashu
 router.post('/users/:userId/cart') //bhushan
 router.put('/users/:userId/cart')  // jiyalal
 router.get('/users/:userId/cart')  // himanshu
-router.delete('/users/:userId/cart') //ritesh
+router.delete('/users/:userId/cart') //ritesh 
 
 //====================[ORDER API'S]=============================
 
