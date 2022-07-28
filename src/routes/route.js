@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router()
 const userController = require("../controller/userController")
 const middleware=require("../Middleware/commonMid")
+const productController = require("../controller/productController")
+
 
 //=====================[ USER API'S ]=========================
 router.post('/register', userController.createUser)
@@ -11,7 +13,7 @@ router.put('/user/:userId/profile',middleware.authenticate,middleware.authForPar
 
 //===================[ PRODUCT API'S]=========================
 router.post('/products') //rites
-router.get('/products') //jiya lal
+router.get('/products',productController.getProduct) //jiya lal
 router.get('/products/:productId')// jiya lal
 router.put('/products/:productId') // bhushan
 router.delete('/products/:productId') // himashu
