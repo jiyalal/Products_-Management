@@ -229,7 +229,7 @@ const getProduct = async (req, res) => {
                 if (filters.size.includes(","))
                 {
                     let sizeArray = filters.size.split(",").map(String).map(x => x.trim())
-                    filters.size = { $all: sizeArray }
+                     filters.size = { $all: sizeArray }
                 }
             }
             if(filters.name){
@@ -247,7 +247,30 @@ const getProduct = async (req, res) => {
 
 
 }
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>GetProductById>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+const getProductById = async (req,res) =>{
+    try{
+
+      let productId = req.params.productId
+
+      if(!isValidObjectId(productId)){
+       return res.status(400).send({status:false, message:"HEY..😐😐..THIS PRODUCT ID IS NOT VALID PLEAE ENTER VALID ID"})
+      }
+
+      let findProduct = await productModel.findOne({_id:productId,isDeleted:false})
+      if(!findProduct){
+       return res.status(404).send({status:false, message:"HEY..😐😐..NO PRODUCT AVAILABLE IN THIS ID"})
+      }
+
+      return res.status(200).send({status:true,message:"YEAH..😍😍 PRODUCT FOUND SUCCESSFULLY", data:findProduct})
+
+    } catch(err){
+        console.log(err)
+        return res.status(500).send({ status: false, err: err.message })
+
+    }
+}
 
 
-
-module.exports = { createProduct, deleteProduct, updateProduct,getProduct }
+module.exports = { createProduct, deleteProduct, updateProduct,getProduct,getProductById }
