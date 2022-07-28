@@ -240,6 +240,8 @@ const updateUser = async function (req, res) {
         }
 
         if (Object.keys(reqData).includes("address")) {
+            const address2=JSON.parse(address)
+            address=address2
             if (!isValidRequest(address)) {
                 return res.status(400).send({ status: false, message: "please enter address " })
             }
@@ -285,9 +287,18 @@ const updateUser = async function (req, res) {
             }
             reqData.address.shipping = shipping2
             reqData.address.billing = billing2
-            
-
-
+        }
+        files = req.files
+       
+        if(files.length!=0){
+            // let profileImage;
+            if (files && files.length > 0) {
+                let uploadedFileURL = await uploadFile(files[0])
+                profileImage = uploadedFileURL;
+            }
+            else {
+                return res.status(400).send({ message: "File link not created" })
+            }
         }
         // reqData.updatedAt = Date.now()
 
