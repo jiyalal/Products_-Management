@@ -7,7 +7,7 @@ const middleware=require("../Middleware/commonMid")
 router.post('/register', userController.createUser)
 router.post('/login', userController.loginUser)
 router.get('/user/:userId/profile',middleware.authenticate,middleware.authForParams, userController.getUserdata)
-router.put('/user/:userId/profile',userController.updateUser)
+router.put('/user/:userId/profile',middleware.authenticate,middleware.authForParams,userController.updateUser)
 
 //===================[ PRODUCT API'S]=========================
 router.post('/products') //rites
