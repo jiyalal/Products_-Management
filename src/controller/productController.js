@@ -2,6 +2,7 @@ const productModel = require("../model/productModel");
 const { isValidRequest } = require("../validators/validator")
 const aws = require("aws-sdk")
 const mongoose = require('mongoose')
+const validator = require('validator')
 
 aws.config.update({
     accessKeyId: "AKIAY3L35MCRVFM24Q7U",
@@ -34,78 +35,79 @@ let uploadFile = async (file) => {
     })
 }
 
-///==========================CREATE PRODUCT=====================///
+///==========================|CREATE PRODUCT|=====================///
 
-const createProduct = async function (req, res){
-try{
-const data = req.Body;
+const createProduct = async function (req, res) {
+    try {
+        const data = req.Body;
 
-if(! isValidRequest(data)){
-    return res.status(400).send({ status: false, message: "Please Enter your Details" })
-}
-const {title, description,price,currencyId,currencyFormat,isFreeShipping,style,availableSizes,installments} = data;
+        if (!isValidRequest(data)) {
+            return res.status(400).send({ status: false, message: "Please Enter your Details" })
+        }
+        const { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments } = data;
 
-//----------------validation for title-------------//
-if(!title) return res.status(400).send({status:false,mesage:"Title is required"})
+        //----------------validation for title-------------//
+        if (!title) return res.status(400).send({ status: false, mesage: "Title is required" })
 
-   if(!isValid(title)) {  
-       return res.status(400).send({status:false, message:"please provide valid title"})
-}
- let duplicateTitle = await productModel.findOne({title:title})
- if(duplicateTitle) return res.status(400).send({status:false,message:"Title is already present"})
- 
- //-------------validation for discription----------//
- if(!description) return res.status(400).send({status:false,mesage:"Description is required"})
+        if (!isValid(title)) {
+            return res.status(400).send({ status: false, message: "please provide valid title" })
+        }
+        let duplicateTitle = await productModel.findOne({ title: title })
+        if (duplicateTitle) return res.status(400).send({ status: false, message: "Title is already present" })
 
- if(!isValid(description)) {  
-    return res.status(400).send({status:false, message:"please provide valid description"})
-}
+        //-------------validation for discription----------//
+        if (!description) return res.status(400).send({ status: false, mesage: "Description is required" })
 
-//----------------validation for prise-------------------//
-if(!price) return res.status(400).send({status:false,mesage:"Price is required"})
+        if (!isValid(description)) {
+            return res.status(400).send({ status: false, message: "please provide valid description" })
+        }
 
-if(!Number(price)) return res.status(400).send({status:false,mesage:"Please enter valid Price"})
+        //----------------validation for prise-------------------//
+        if (!price) return res.status(400).send({ status: false, mesage: "Price is required" })
 
-if(Number(price) <= 0) return res.status(400).send({status:false,mesage:"Price not valid"})
+        if (!Number(price)) return res.status(400).send({ status: false, mesage: "Please enter valid Price" })
 
-if(!/^[1-9]\d{0,7}(?:\.\d{1,4})?$/.test(price)) return res.status(400).send({status:false,mesage:"Price must be valid number/decimal"})
+        if (Number(price) <= 0) return res.status(400).send({ status: false, mesage: "Price not valid" })
 
-//---------------validation for currencyId-----------------//
-if(!currencyId) return res.status(400).send({status:false,mesage:"currencyId is required"})
+        if (!/^[1-9]\d{0,7}(?:\.\d{1,4})?$/.test(price)) return res.status(400).send({ status: false, mesage: "Price must be valid number/decimal" })
 
-if(!isValid(currencyId)) {  
-    return res.status(400).send({status:false, message:"please provide valid currencyId"})
-}
+        //---------------validation for currencyId-----------------//
+        if (!currencyId) return res.status(400).send({ status: false, mesage: "currencyId is required" })
 
-if(data.currencyId != "INR") return res.status(400).send({status:false, message:"please provide currencyId only in INR"})
+        if (!isValid(currencyId)) {
+            return res.status(400).send({ status: false, message: "please provide valid currencyId" })
+        }
 
-//----------------validation for currencyFormat-----------//
-if(!currencyFormat) return res.status(400).send({status:false,mesage:"currencyFormat is required"})
+        if (data.currencyId != "INR") return res.status(400).send({ status: false, message: "please provide currencyId only in INR" })
 
-if(!isValid(currencyFormat)) {  
-    return res.status(400).send({status:false, message:"please provide valid currencyFormat"})
-}
+        //----------------validation for currencyFormat-----------//
+        if (!currencyFormat) return res.status(400).send({ status: false, mesage: "currencyFormat is required" })
 
-if(data.currencyFormat != "₹") return res.status(400).send({status:false, message:"please provide currencyId only in ₹"})
+        if (!isValid(currencyFormat)) {
+            return res.status(400).send({ status: false, message: "please provide valid currencyFormat" })
+        }
 
-//-------------validation for isFreeShipping---------------//
+        if (data.currencyFormat != "₹") return res.status(400).send({ status: false, message: "please provide currencyId only in ₹" })
 
-if(!['true','false'].includes(isFreeShipping)) return res.status(400).send({status:false, message:"please provide isFreeShipping only in Boolean"})
+        //-------------validation for isFreeShipping---------------//
 
-//--------------validation for style---------------------//
-if(!isValid(style)) {  
-    return res.status(400).send({status:false, message:"please provide valid style"})
-}
-//--------------validation for availableSizes------------//
+        if (!['true', 'false'].includes(isFreeShipping)) return res.status(400).send({ status: false, message: "please provide isFreeShipping only in Boolean" })
 
+        //--------------validation for style---------------------//
+        if (!isValid(style)) {
+            return res.status(400).send({ status: false, message: "please provide valid style" })
+        }
+        //--------------validation for availableSizes------------//
+        if (!availableSizes) return res.status(400).send({ status: false, mesage: "availableSizes is required" })
+        if(!["S", "XS","M","X", "L","XXL", "XL"],includes(availableSizes)) return res.status(400).send({ status: false, message: "please provide valid available sizes" })
 
-//---------------validation for installments--------------//
-if(!Number(installments)) return res.status(400).send({status:false,mesage:"Please enter valid installments"})
+        //---------------validation for installments--------------//
+        if (!Number(installments)) return res.status(400).send({ status: false, mesage: "Please enter valid installments" })
 
-if(Number(installments) <= 0) return res.status(400).send({status:false,mesage:"installments is not valid"})
+        if (Number(installments) <= 0) return res.status(400).send({ status: false, mesage: "installments is not valid" })
 
-//---------------upload productImage s3 files-------------//
-files = req.files
+        //---------------upload productImage s3 files-------------//
+        files = req.files
         let productImage;
         if (files && files.length > 0) {
             let uploadedFileURL = await uploadFile(files[0])
@@ -114,14 +116,14 @@ files = req.files
         else {
             return res.status(400).send({ message: "File link not created" })
         }
-    //--------------------------------------------------------//
+        //--------------------------------------------------------//
 
         let createProduct = await productModel.create(data)
-        return res.status(201).send({status:true, message:"Success",data:createProduct})
-    
-    }catch(err){
-        return res.status(500).send({status:false,message:err.massage})
+        return res.status(201).send({ status: true, message: "Success", data: createProduct })
+
+    } catch (err) {
+        return res.status(500).send({ status: false, message: err.massage })
     }
 }
 
-module.exports = {createProduct}
+module.exports = { createProduct }

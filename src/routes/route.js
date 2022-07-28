@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const userController = require("../controller/userController")
+const productController = require("../controller/productController")
 const middleware=require("../Middleware/commonMid")
 
 //=====================[ USER API'S ]=========================
@@ -10,7 +11,7 @@ router.get('/user/:userId/profile',middleware.authenticate,middleware.authForPar
 router.put('/user/:userId/profile',middleware.authenticate,middleware.authForParams,userController.updateUser)
 
 //===================[ PRODUCT API'S]=========================
-router.post('/products') //rites
+router.post('/products',productController.createProduct) //rites
 router.get('/products') //jiya lal
 router.get('/products/:productId')// jiya lal
 router.put('/products/:productId') // bhushan
