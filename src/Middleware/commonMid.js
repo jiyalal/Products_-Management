@@ -19,10 +19,12 @@ const myFunc = token => {
 
 const authenticate = async function (req, res, next) {
     try {
+
         let token = req.headers["authorization"] // --> token is picked from the headers section of the request
-        token=token.slice(7)
+        
         // console.log(token)
-        if ( !token ) return res.status(401).send( { status: false, msg: "token must be present in request header."} )  // --> if token is not present in the headers
+        if ( !token ) return res.status(401).send( { status: false, msg: "token must be present ."} )  // --> if token is not present in the headers
+        token=token.slice(7)
         let decodedToken = myFunc(token)
         if (!decodedToken) return res.status(403).send({ status: false, message: "invalid token" })
         req.decodedToken = decodedToken

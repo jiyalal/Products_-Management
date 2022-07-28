@@ -105,9 +105,6 @@ const createUser = async function (req, res) {
 
         }
 
-
-
-        
         const user = {
             fname, lname, email, profileImage, phone, password: encryptPassword, address
         }
@@ -175,7 +172,7 @@ const getUserdata = async function (req, res) {
         })
         if (!finddata) return res.status(404).send({ status: false, message: "No user found" })
 
-        return res.status(200).send({ status: true, message: "User profile details, data:finddata", data: finddata })
+        return res.status(200).send({ status: true, message: "User profile details", data: finddata })
     }
     catch (err) {
         return res.status(500).send({ status: false, message: err.message })
@@ -185,7 +182,7 @@ const updateUser = async function (req, res) {
     try {
         let userId = req.params.userId
 
-        if (isValidObjectId(userId)) {
+        if (userId.length!=24) {
             return res.status(400).send({ status: false, message: " UserId Invalid " })
         }
         let userd = await userModel.findById(userId);
@@ -193,11 +190,13 @@ const updateUser = async function (req, res) {
             return res.status(404).send({ status: false, message: " No such data found " })
         }
         let reqData = req.body;
-        if (!isValidRequest(reqData)) {
+        let { fname, lname, email, phone, password, address } = reqData
+        files = req.files
+        if ((Object.keys(reqData).length==0)&& !files) {
             return res.status(400).send({ status: false, message: "Please Enter your Details to Update" })
         }
 
-        let { fname, lname, email, profileImage, phone, password, address } = reqData
+        
 
         if (Object.keys(reqData).includes("fname") && (!nameRegex.test(fname) || !isValid(fname))) {
             return res.status(400).send({ status: false, message: "provide valid first name" })
@@ -240,6 +239,9 @@ const updateUser = async function (req, res) {
         }
 
         if (Object.keys(reqData).includes("address")) {
+            const address2=JSON.parse(address)
+            address=address2
+            // console.log(address.shipping)
             if (!isValidRequest(address)) {
                 return res.status(400).send({ status: false, message: "please enter address " })
             }
@@ -247,7 +249,7 @@ const updateUser = async function (req, res) {
             const { shipping, billing } = address
             let shipping2 = userd.address.shipping;
             let billing2 = userd.address.billing;
-
+        
 
 
             if (shipping) {
@@ -283,11 +285,20 @@ const updateUser = async function (req, res) {
                 }
              
             }
+            reqData.address={}
             reqData.address.shipping = shipping2
             reqData.address.billing = billing2
-            
-
-
+        }
+      
+        if(files.length!=0){
+            if (files && files.length > 0) {
+                let uploadedFileURL = await uploadFile(files[0])
+               profileImage = uploadedFileURL;
+               reqData.profileImage=profileImage
+            }
+            else {
+                return res.status(400).send({ message: "Profile Image not available" })
+            }
         }
         // reqData.updatedAt = Date.now()
 
