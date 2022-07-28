@@ -123,5 +123,27 @@ files = req.files
         return res.status(500).send({status:false,message:err.massage})
     }
 }
+///==========================Delete PRODUCT=====================///
+{
+    const deleteProduct = async function (req, res) {
+        try {
+            const productId = req.params.productId
+            if (productId.length!=24) return res.status(400).send({ status: false, message: `${productId} is not a valid ObjectId😥😥` })
+            const prod = await productModel.findOne({ _id: productId, isDeleted: false })
+            if (!prod) {
+                return res.status(404).send({ status: false, message: "product is not available" })
+            }
+            
+    
+            const deleteProduct = await productModel.findByIdAndUpdate(productId, { isDeleted: true, deletedAt: new Date() },
+                { new: true })
+            return res.status(200).send({ status: true, message: "Success",data:deleteProduct })
+        }
+        catch (err) {
+            
+            res.status(500).send({ message: err.message })
+        }
+    }
+}
 
-module.exports = {createProduct}
+module.exports = {createProduct,deleteProduct}
