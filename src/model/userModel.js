@@ -29,8 +29,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     }, // encrypted password
-    createdAt:{type:Date},
-    updatedAt:{type:Date},
     address: {
         shipping: {
             street: { 
@@ -61,6 +59,8 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
+    createdAt:{type:Date},
+    updatedAt:{type:Date}
 },
 { timestamps: true }
 );
