@@ -1,6 +1,6 @@
 const userModel = require("../model/userModel")  // importing the module that contains the user schema
 const jwt = require('jsonwebtoken')
-const { isValidRequest, isValid, nameRegex, emailRegex, phoneRegex, passRegex } = require('../validators/validator')
+const { isValidRequest, isValid,isValidObjectId, nameRegex, emailRegex, phoneRegex, passRegex } = require('../validators/validator')
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt');
 const aws = require("aws-sdk")
@@ -185,11 +185,11 @@ const updateUser = async function (req, res) {
     try {
         let userId = req.params.userId
 
-        if (userId.length != 24) {
+        if (isValidObjectId(userId)) {
             return res.status(400).send({ status: false, message: " UserId Invalid " })
         }
         let userd = await userModel.findById(userId);
-        if (Object.keys(userd).length == 0 || userd.isDeleted == true) {
+        if (Object.keys(userd).length == 0) {
             return res.status(404).send({ status: false, message: " No such data found " })
         }
         let reqData = req.body;
