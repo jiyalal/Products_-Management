@@ -105,9 +105,6 @@ const createUser = async function (req, res) {
 
         }
 
-
-
-        
         const user = {
             fname, lname, email, profileImage, phone, password: encryptPassword, address
         }

@@ -10,9 +10,9 @@ const productModel = new mongoose.Schema(
     isFreeShipping: {type: Boolean, default: false },
     productImage: { type:String, require:true },  // s3 link
     style: { type:String },
-    availableSizes: { type:[String] },
+    availableSizes: { type:[String] }, 
     installments: { type:Number },
-    deletedAt: {type: Date},
+    deletedAt: {type: Date, default:null},
     isDeleted: { type:Boolean, default: false },
     createdAt: { type:Date},
     updatedAt: { type:Date },
