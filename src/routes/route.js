@@ -14,11 +14,7 @@ router.put('/user/:userId/profile',middleware.authenticate,middleware.authForPar
 
 //===================[ PRODUCT API'S]=========================
 router.post('/products',productController.createProduct) //rites
-<<<<<<< HEAD
-router.get('/products') //jiya lal
-=======
 router.get('/products',productController.getProduct) //jiya lal
->>>>>>> d3ade3d8cd5f0e41946e68ea889a9eaa75486c9c
 router.get('/products/:productId')// jiya lal
 router.put('/products/:productId',productController.updateProduct) // bhushan
 router.delete('/products/:productId',productController.deleteProduct) // himashu
