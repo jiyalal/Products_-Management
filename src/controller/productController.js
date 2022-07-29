@@ -104,39 +104,39 @@ const createProduct = async function (req, res) {
             let arr = availableSizes.split(",").map(el => el.trim())
             for (let availableSizes of arr) {
                 if (!["XS", "X", "S", "M", "L", "XL", "XXL"].includes(availableSizes)) return res.status(400).send({ status: false, message: "size parmeter can only take XS , X , S , M , L , XL , XXL these values" })
-            
+
             }
             data["availableSizes"] = arr
-            
+
         }
-            //---------------validation for installments--------------//
-            if (!Number(installments)) return res.status(400).send({ status: false, mesage: "Please enter valid installments" })
+        //---------------validation for installments--------------//
+        if (!Number(installments)) return res.status(400).send({ status: false, mesage: "Please enter valid installments" })
 
-            if (Number(installments) <= 0) return res.status(400).send({ status: false, mesage: "installments is not valid" })
+        if (Number(installments) <= 0) return res.status(400).send({ status: false, mesage: "installments is not valid" })
 
-            //---------------upload productImage s3 files-------------//
-            files = req.files
-            let productImage;
-            if (files && files.length > 0) {
-                let uploadedFileURL = await uploadFile(files[0])
-                productImage = uploadedFileURL;
-            }
-            else {
-                return res.status(400).send({ message: "File link not created" })
-            }
-            //--------------------------------------------------------//
-
-            let createProduct = await productModel.create(data)
-            return res.status(201).send({ status: true, message: "Success", data: createProduct })
-
-        
-         } catch (err) {
-            return res.status(500).send({ status: false, message: err.massage })
+        //---------------upload productImage s3 files-------------//
+        files = req.files
+        let productImage;
+        if (files && files.length > 0) {
+            let uploadedFileURL = await uploadFile(files[0])
+            productImage = uploadedFileURL;
         }
-    
-///==========================Delete PRODUCT=====================///
+        else {
+            return res.status(400).send({ message: "File link not created" })
+        }
+        //--------------------------------------------------------//
 
-const deleteProduct = async function (req, res) {
+        let createProduct = await productModel.create(data)
+        return res.status(201).send({ status: true, message: "Success", data: createProduct })
+
+
+    } catch (err) {
+        return res.status(500).send({ status: false, message: err.massage })
+    }
+
+    ///==========================Delete PRODUCT=====================///
+
+    const deleteProduct = async function (req, res) {
         try {
             const productId = req.params.productId
             if (productId.length != 24) return res.status(400).send({ status: false, message: `${productId} is not a valid ObjectId😥😥` })
