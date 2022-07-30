@@ -231,105 +231,135 @@ const getProduct = async (req, res) => {
             {
                 return res.status(404).send({ status: false, message: "HEY..🤨🤨 NO RESULT FOUND" })
             }
-            let sortedProduct = product.sort(function (a, b) {
-                var titleA = a.title.toUpperCase(); // ignore upper and lowercase
-                var titleB = b.title.toUpperCase(); // ignore upper and lowercase
-                if (titleA < titleB)
-                {
-                    return -1; //titleA comes first
-                }
-                if (titleA > titleB)
-                {
-                    return 1; // titleB comes first
-                }
-                return 0;
-            })
-            return res.status(200).send({ status: true, data: sortedProduct })
 
+            let { size, name, priceGreaterThan, priceLessThan, sortPrice } = filters
 
-        }
-        else
-        {
-            Object.keys(filters).forEach(x => filters[x] = filters[x].trim())
-
-            if (filters.size)
-            {
-                if (filters.size.includes(","))
+            if(size) {
+                let arr = size.split(",").map(el => el.trim())
+                for (let size of arr)
                 {
-                    let sizeArray = filters.size.split(",").map(String).map(x => x.trim())
-                    filters.size = { $all: sizeArray }
+                    if (!["XS", "X", "S", "M", "L", "XL", "XXL"].includes(size))
+             return res.status(400).send({ status: false, message: "size parmeter can only take XS , X , S , M , L , XL , XXL these values" })
+    
                 }
+                data["size"] = arr
+    
             }
-            if (filters.name)
+                   
+                
+            
+
+
+            
+
+                //     let sortedProduct = product.sort(function (a, b) {
+                //         var titleA = a.title.toUpperCase(); // ignore upper and lowercase
+                //         var titleB = b.title.toUpperCase(); // ignore upper and lowercase
+                //         if (titleA < titleB)
+                //         {
+                //             return -1; //titleA comes first
+                //         }
+                //         if (titleA > titleB)
+                //         {
+                //             return 1; // titleB comes first
+                //         }
+                //         return 0;
+                //     })
+                //     return res.status(200).send({ status: true, data: sortedProduct })
+
+
+                // }
+                // else
+                // {
+                //     Object.keys(filters).forEach(x => filters[x] = filters[x].trim())
+
+                //     if (filters.size)
+                //     {
+                //         if (filters.size.includes(","))
+                //         {
+                //             let sizeArray = filters.size.split(",").map(String).map(x => x.trim())
+                //             filters.size = { $all: sizeArray }
+                //         }
+                //     }
+                //     if (filters.name){
+                //         if(!isValid(filters.name)){
+                //             return res.status(400).send({status:false,message:"HEY..😐😐 PLEASE ENTER VALID NAME"})
+                //         }
+                //     }
+                //     if(filters.price){
+
+                //     }
+            }
+
+
+
+
+            // }
+            filters.isDeleted = false;
+            let filtersProduct = await productModel.find(filters).select({
+                _id: 1, title: 1, description: 1, price: 1,
+                currencyId: 1, currencyFormat: 1, isFreeShipping: 1, productImage: 1, style: 1, availableSizes: 1, installments: 1,
+                deletedAt: 1, isDeleted: 1, createdAt: 1, updatedAt: 1
+            })
+
+            if (filtersProduct.length == 0)
             {
+                return res.status(404).send({ status: false, message: "HEY..😐😐 NO PRODUCT FOUND" })
+            } else
+            {
+                let sortedProduct = filtersProduct.sort(function (a, b) {
+                    var titleA = a.title.toUpperCase(); // ignore upper and lowercase
+                    var titleB = b.title.toUpperCase(); // ignore upper and lowercase
+                    if (titleA < titleB)
+                    {
+                        return -1; //titleA comes first
+                    }
+                    if (titleA > titleB)
+                    {
+                        return 1; // titleB comes first
+                    }
+                    return 0;
+                })
+                return res.status(200).send({ status: true, data: sortedProduct })
 
             }
-        }
-        filters.isDeleted = false;
-        let filtersProduct = await productModel.find(filters).select({
-            _id: 1, title: 1, description: 1, price: 1,
-            currencyId: 1, currencyFormat: 1, isFreeShipping: 1, productImage: 1, style: 1, availableSizes: 1, installments: 1,
-            deletedAt: 1, isDeleted: 1, createdAt: 1, updatedAt: 1
-        })
 
-        if (filtersProduct.length == 0)
-        {
-            return res.status(404).send({ status: false, message: "HEY..😐😐 NO PRODUCT FOUND" })
-        } else
-        {
-            let sortedProduct = filtersProduct.sort(function (a, b) {
-                var titleA = a.title.toUpperCase(); // ignore upper and lowercase
-                var titleB = b.title.toUpperCase(); // ignore upper and lowercase
-                if (titleA < titleB)
-                {
-                    return -1; //titleA comes first
-                }
-                if (titleA > titleB)
-                {
-                    return 1; // titleB comes first
-                }
-                return 0;
-            })
-            return res.status(200).send({ status: true, data: sortedProduct })
 
+        } catch (err)
+        {
+            console.log(err)
+            return res.status(500).send({ status: false, err: err.message })
         }
 
-
-    } catch (err)
-    {
-        console.log(err)
-        return res.status(500).send({ status: false, err: err.message })
     }
-
-}
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>GetProductById>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 const getProductById = async (req, res) => {
-    try
-    {
-
-        let productId = req.params.productId
-
-        if (!isValidObjectId(productId))
+        try
         {
-            return res.status(400).send({ status: false, message: "HEY..😐😐..THIS PRODUCT ID IS NOT VALID PLEAE ENTER VALID ID" })
-        }
 
-        let findProduct = await productModel.findOne({ _id: productId, isDeleted: false })
-        if (!findProduct)
+            let productId = req.params.productId
+           
+            if (!isValidObjectId(productId))
+            {
+                return res.status(400).send({ status: false, message: "HEY..😐😐..THIS PRODUCT ID IS NOT VALID PLEAE ENTER VALID ID" })
+            }
+
+            let findProduct = await productModel.findOne({ _id: productId, isDeleted: false })
+            if (!findProduct)
+            {
+                return res.status(404).send({ status: false, message: "HEY..😐😐..NO PRODUCT AVAILABLE IN THIS ID" })
+            }
+        
+            return res.status(200).send({ status: true, message: "YEAH..😍😍 PRODUCT FOUND SUCCESSFULLY", data: findProduct })
+
+        } catch (err)
         {
-            return res.status(404).send({ status: false, message: "HEY..😐😐..NO PRODUCT AVAILABLE IN THIS ID" })
+            console.log(err)
+            return res.status(500).send({ status: false, err: err.message })
+
         }
-
-        return res.status(200).send({ status: true, message: "YEAH..😍😍 PRODUCT FOUND SUCCESSFULLY", data: findProduct })
-
-    } catch (err)
-    {
-        console.log(err)
-        return res.status(500).send({ status: false, err: err.message })
-
     }
-}
 
 
-module.exports = { createProduct, deleteProduct, updateProduct, getProduct, getProductById }
+    module.exports = { createProduct, deleteProduct, updateProduct, getProduct, getProductById }
