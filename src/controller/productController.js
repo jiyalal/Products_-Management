@@ -175,41 +175,77 @@ const deleteProduct = async function (req, res) {
 //===========================[  UPDATE PRODUCT  ]======================================
 
 const updateProduct = async function (req, res) {
-    let productId = req.params.productId
-    let data = req.body
-    let { title, description, price, currencyId, currencyFormat, isFreeShipping, productImage, style, availableSizes, installments } = data
+    try {
+        let productId = req.params.productId
+        let data = req.body
+        let files = req.files
+        let { title, description, price, isFreeShipping, style, availableSizes, installments } = data
 
-    if (!isValidObjectId(productId)) return res.status(400).send({ status: false, message: "please enter valid Id in params" })
+        if (!isValidObjectId(productId)) return res.status(400).send({ status: false, message: "please enter valid Id in params" })
 
-    let product = await productModel.findById(productId)
+        let product = await productModel.findById(productId)
 
-    if (Object.keys(product).length == 0) { return res.status(404).send({ status: false, message: " No such data found " }) }
+        if (Object.keys(product).length == 0) { return res.status(404).send({ status: false, message: " No such data found " }) }
 
-    if (product.isDeleted === true) return res.status(400).send({ status: false, message: "This product is already deleted." })
-    if (product.title == title) return res.status(400).send({ status: false, message: "title is not unique, please provide another one." })
+        if (product.isDeleted === true) return res.status(404).send({ status: false, message: "This product is already deleted." })
+        if (product.title == title) return res.status(409).send({ status: false, message: "title is not unique, please provide another one." })
 
-    if (Object.keys(data).length === 0) return res.status(400).send({ status: false, message: "Provide the data in the body to update." })
+        if (Object.keys(data).length === 0 && !files) return res.status(400).send({ status: false, message: "Provide the data in the body to update." })
 
-    if (description)
-    {
-        if (!isValidRequest(description)) return res.status(400).send({ status: false, message: "please provide data for description" })
-    }
-    if (price)
-    {
-        if (!priceRegex.test(price)) return res.status(400).send({ status: false, message: "Enter valid price" })
-    }
+        if (description) {
+            if (!isValidRequest(description)) return res.status(400).send({ status: false, message: "please provide data for description" })
+        }
+        if (price) {
+            if (!priceRegex.test(price)) return res.status(400).send({ status: false, message: "Enter valid price" })
+        }
+        if (isFreeShipping) {
+            if (isFreeShipping != true)
+                return res.status(400).send({ status: false, message: "only true or false for isFreeShipping and must be boolean " })
+        }
+        if (style) {
+            if (!isValidRequest(style)) return res.status(400).send({ status: false, message: "provide data in style" })
+        }
 
-    let update = await productModel.findOneAndUpdate({ _id: productId },
-        {
-            $set: {
-                title: title, description: description, price: price, currencyId: currencyId,
-                currencyFormat: currencyFormat, isFreeShipping: isFreeShipping, productImage: productImage,
-                style: style, availableSizes: availableSizes, installments: installments
+        let productImage;
+        if (files) {
+
+            if (files && files.length > 0) {
+                let uploadedFileURL = await uploadFile(files[0])
+                productImage = uploadedFileURL;
             }
-        },
-        { new: true })
-    return res.status(200).send({ status: true, message: "Update data succesfully", data: update })
+            else {
+                return res.status(400).send({ message: "File link not created" })
+            }
+
+            if (availableSizes) {
+                let arr = availableSizes.split(",").map(el => el.trim())
+                for (let availableSizes of arr) {
+                    if (!["XS", "X", "S", "M", "L", "XL", "XXL"].includes(availableSizes)) return res.status(400).send({ status: false, message: "size parmeter can only take XS , X , S , M , L , XL , XXL these values" })
+
+                }
+                data["availableSizes"] = arr
+
+            }
+            if (installments) {
+                if (!Number(installments) || Number(installments) <= 0)
+                    return res.status(400).send({ status: false, mesage: "Please enter valid installments" })
+            }
+            let update = await productModel.findOneAndUpdate({ _id: productId },
+                {
+                    $set: {
+                        title: title, description: description, price: price,
+                        isFreeShipping: isFreeShipping, productImage: productImage,
+                        style: style, availableSizes: availableSizes, installments: installments
+                    }
+                },
+                { new: true })
+            return res.status(200).send({ status: true, message: "Update data succesfully", data: update })
+        }
+    } catch (err) {
+        return res.status(500).send({ status: false, message: err.massage })
+    }
 }
+
 // >>>>>>>>>>>>>>>>>>>>>>>>>GETPRODUCT>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 const getProduct = async (req, res) => {
