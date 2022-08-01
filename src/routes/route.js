@@ -24,11 +24,11 @@ router.delete('/products/:productId',productController.deleteProduct) // himashu
 router.post('/users/:userId/cart') //bhushan
 router.put('/users/:userId/cart')  // jiyalal
 router.get('/users/:userId/cart')  // himanshu
-router.delete('/users/:userId/cart') //ritesh 
+//router.delete('/users/:userId/cart',cartController.deleteCart) //ritesh 
 
 //====================[ORDER API'S]=============================
 
 router.post('/users/:userId/orders')  //Bhushan
-router.put('/users/:userId/orders')  //Ritesh
+//router.put('/users/:userId/orders',orderController.updateOrder)  //Ritesh
 
 module.exports = router
