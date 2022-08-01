@@ -175,7 +175,8 @@ const deleteProduct = async function (req, res) {
 //===========================[  UPDATE PRODUCT  ]======================================
 
 const updateProduct = async function (req, res) {
-    try {
+    try
+    {
         let productId = req.params.productId
         let data = req.body
         let files = req.files
@@ -192,41 +193,51 @@ const updateProduct = async function (req, res) {
 
         if (Object.keys(data).length === 0 && !files) return res.status(400).send({ status: false, message: "Provide the data in the body to update." })
 
-        if (description) {
+        if (description)
+        {
             if (!isValidRequest(description)) return res.status(400).send({ status: false, message: "please provide data for description" })
         }
-        if (price) {
+        if (price)
+        {
             if (!priceRegex.test(price)) return res.status(400).send({ status: false, message: "Enter valid price" })
         }
-        if (isFreeShipping) {
+        if (isFreeShipping)
+        {
             if (isFreeShipping != true)
                 return res.status(400).send({ status: false, message: "only true or false for isFreeShipping and must be boolean " })
         }
-        if (style) {
+        if (style)
+        {
             if (!isValidRequest(style)) return res.status(400).send({ status: false, message: "provide data in style" })
         }
 
         let productImage;
-        if (files) {
+        if (files)
+        {
 
-            if (files && files.length > 0) {
+            if (files && files.length > 0)
+            {
                 let uploadedFileURL = await uploadFile(files[0])
                 productImage = uploadedFileURL;
             }
-            else {
+            else
+            {
                 return res.status(400).send({ message: "File link not created" })
             }
 
-            if (availableSizes) {
+            if (availableSizes)
+            {
                 let arr = availableSizes.split(",").map(el => el.trim())
-                for (let availableSizes of arr) {
+                for (let availableSizes of arr)
+                {
                     if (!["XS", "X", "S", "M", "L", "XL", "XXL"].includes(availableSizes)) return res.status(400).send({ status: false, message: "size parmeter can only take XS , X , S , M , L , XL , XXL these values" })
 
                 }
                 data["availableSizes"] = arr
 
             }
-            if (installments) {
+            if (installments)
+            {
                 if (!Number(installments) || Number(installments) <= 0)
                     return res.status(400).send({ status: false, mesage: "Please enter valid installments" })
             }
@@ -241,7 +252,8 @@ const updateProduct = async function (req, res) {
                 { new: true })
             return res.status(200).send({ status: true, message: "Update data succesfully", data: update })
         }
-    } catch (err) {
+    } catch (err)
+    {
         return res.status(500).send({ status: false, message: err.massage })
     }
 }
@@ -267,135 +279,91 @@ const getProduct = async (req, res) => {
             {
                 return res.status(404).send({ status: false, message: "HEY..🤨🤨 NO RESULT FOUND" })
             }
+            else
+            {
+                Object.keys(filters).forEach(x => filters[x] = filters[x].trim())
+                let { size, name, priceGreaterThan, priceLessThan, sortPrice } = filters
 
-            let { size, name, priceGreaterThan, priceLessThan, sortPrice } = filters
-
-            if(size) {
-                let arr = size.split(",").map(el => el.trim())
-                for (let size of arr)
+                if (size)
                 {
-                    if (!["XS", "X", "S", "M", "L", "XL", "XXL"].includes(size))
-             return res.status(400).send({ status: false, message: "size parmeter can only take XS , X , S , M , L , XL , XXL these values" })
-    
+                    if (size.includes(","))
+                    {
+                        let sizeArray = size.split(",").map(String).map(x => x.trim())
+                        for (let i = 0; i < sizeArray.length; i++)
+                        {
+                            if (["S", "XS", "M", "L", "XXL", "XL"].includes(sizeArray[i]))
+                            {
+                                filters['availableSizes'] = sizeArray
+                            }
+                        }
+
+                    }
                 }
-                data["size"] = arr
-    
-            }
-                   
-                
-            
-
-
-            
-
-                //     let sortedProduct = product.sort(function (a, b) {
-                //         var titleA = a.title.toUpperCase(); // ignore upper and lowercase
-                //         var titleB = b.title.toUpperCase(); // ignore upper and lowercase
-                //         if (titleA < titleB)
-                //         {
-                //             return -1; //titleA comes first
-                //         }
-                //         if (titleA > titleB)
-                //         {
-                //             return 1; // titleB comes first
-                //         }
-                //         return 0;
-                //     })
-                //     return res.status(200).send({ status: true, data: sortedProduct })
-
-
-                // }
-                // else
-                // {
-                //     Object.keys(filters).forEach(x => filters[x] = filters[x].trim())
-
-                //     if (filters.size)
-                //     {
-                //         if (filters.size.includes(","))
-                //         {
-                //             let sizeArray = filters.size.split(",").map(String).map(x => x.trim())
-                //             filters.size = { $all: sizeArray }
-                //         }
-                //     }
-                //     if (filters.name){
-                //         if(!isValid(filters.name)){
-                //             return res.status(400).send({status:false,message:"HEY..😐😐 PLEASE ENTER VALID NAME"})
-                //         }
-                //     }
-                //     if(filters.price){
-
-                //     }
-            }
-
-
-
-
-            // }
-            filters.isDeleted = false;
-            let filtersProduct = await productModel.find(filters).select({
-                _id: 1, title: 1, description: 1, price: 1,
-                currencyId: 1, currencyFormat: 1, isFreeShipping: 1, productImage: 1, style: 1, availableSizes: 1, installments: 1,
-                deletedAt: 1, isDeleted: 1, createdAt: 1, updatedAt: 1
-            })
-
-            if (filtersProduct.length == 0)
-            {
-                return res.status(404).send({ status: false, message: "HEY..😐😐 NO PRODUCT FOUND" })
-            } else
-            {
-                let sortedProduct = filtersProduct.sort(function (a, b) {
-                    var titleA = a.title.toUpperCase(); // ignore upper and lowercase
-                    var titleB = b.title.toUpperCase(); // ignore upper and lowercase
-                    if (titleA < titleB)
+                if (name)
+                {
+                    if (!isValid(name))
                     {
-                        return -1; //titleA comes first
+                        return res.status(400).send({ status: false, message: "HEY..😐😐 PLEASE ENTER VALID NAME" })
                     }
-                    if (titleA > titleB)
-                    {
-                        return 1; // titleB comes first
-                    }
-                    return 0;
-                })
-                return res.status(200).send({ status: true, data: sortedProduct })
+                }
+                if (filters.price)
+                {
 
+                }
             }
 
 
-        } catch (err)
-        {
-            console.log(err)
-            return res.status(500).send({ status: false, err: err.message })
+
+
         }
+        filters.isDeleted = false;
+        let filtersProduct = await productModel.find(filters).select({
+            _id: 1, title: 1, description: 1, price: 1,
+            currencyId: 1, currencyFormat: 1, isFreeShipping: 1, productImage: 1, style: 1, availableSizes: 1, installments: 1,
+            deletedAt: 1, isDeleted: 1, createdAt: 1, updatedAt: 1
+        })
 
+        if (filtersProduct.length == 0)
+        {
+            return res.status(404).send({ status: false, message: "HEY..😐😐 NO PRODUCT FOUND" })
+        }
     }
+
+    catch (err)
+    {
+        console.log(err)
+        return res.status(500).send({ status: false, err: err.message })
+    }
+
+}
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>GetProductById>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 const getProductById = async (req, res) => {
-        try
+    try
+    {
+
+        let productId = req.params.productId
+
+        if (!isValidObjectId(productId))
         {
-
-            let productId = req.params.productId
-           
-            if (!isValidObjectId(productId))
-            {
-                return res.status(400).send({ status: false, message: "HEY..😐😐..THIS PRODUCT ID IS NOT VALID PLEAE ENTER VALID ID" })
-            }
-
-            let findProduct = await productModel.findOne({ _id: productId, isDeleted: false })
-            if (!findProduct)
-            {
-                return res.status(404).send({ status: false, message: "HEY..😐😐..NO PRODUCT AVAILABLE IN THIS ID" })
-            }
-        
-            return res.status(200).send({ status: true, message: "YEAH..😍😍 PRODUCT FOUND SUCCESSFULLY", data: findProduct })
-
-        } catch (err)
-        {
-            console.log(err)
-            return res.status(500).send({ status: false, err: err.message })
-
+            return res.status(400).send({ status: false, message: "HEY..😐😐..THIS PRODUCT ID IS NOT VALID PLEAE ENTER VALID ID" })
         }
+
+        let findProduct = await productModel.findOne({ _id: productId, isDeleted: false })
+        if (!findProduct)
+        {
+            return res.status(404).send({ status: false, message: "HEY..😐😐..NO PRODUCT AVAILABLE IN THIS ID" })
+        }
+
+        return res.status(200).send({ status: true, message: "YEAH..😍😍 PRODUCT FOUND SUCCESSFULLY", data: findProduct })
+
+    } catch (err)
+    {
+        console.log(err)
+        return res.status(500).send({ status: false, err: err.message })
+
     }
+}
 
 
-    module.exports = { createProduct, deleteProduct, updateProduct, getProduct, getProductById }
+module.exports = { createProduct, deleteProduct, updateProduct, getProduct, getProductById }
