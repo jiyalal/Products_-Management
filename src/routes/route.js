@@ -30,6 +30,6 @@ router.delete('/users/:userId/cart',cartController.deleteCart) //ritesh
 //====================[ORDER API'S]=============================
 
 router.post('/users/:userId/orders')  //Bhushan
-router.put('/users/:userId/orders')  //Ritesh
+//router.put('/users/:userId/orders',orderController.updateOrder)  //Ritesh
 
 module.exports = router
