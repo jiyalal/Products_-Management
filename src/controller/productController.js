@@ -41,13 +41,13 @@ let uploadFile = async (file) => {
 const createProduct = async function (req, res) {
     try {
 
-        const data = req.Body;
+    
 
         if (!isValidRequest(data)) {
             return res.status(400).send({ status: false, message: "Please Enter your Details" })
         }
 
-        const { title, description, price, currencyId, curreni7uycyFormat, isFreeShipping, style, availableSizes, installments } = data;
+        const { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments } = data;
 
         //----------------validation for title-------------//
         if (!title) return res.status(400).send({ status: false, mesage: "Title is required" })
@@ -117,6 +117,7 @@ const createProduct = async function (req, res) {
         if (Number(installments) <= 0) return res.status(400).send({ status: false, mesage: "installments is not valid" })
 
         //---------------upload productImage s3 files-------------//
+        const data = req.Body;
         files = req.files
         let productImage;
         if (files && files.length > 0) {
@@ -126,6 +127,7 @@ const createProduct = async function (req, res) {
         else {
             return res.status(400).send({ message: "File link not created" })
        }
+       
         //--------------------------------------------------------//
 
         let createProduct = await productModel.create(data)
