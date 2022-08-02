@@ -41,13 +41,13 @@ let uploadFile = async (file) => {
 const createProduct = async function (req, res) {
     try {
 
-        const data = req.Body;
+        const data = req.body;
 
         if (!isValidRequest(data)) {
             return res.status(400).send({ status: false, message: "Please Enter your Details" })
         }
 
-        const { title, description, price, currencyId, curreni7uycyFormat, isFreeShipping, style, availableSizes, installments } = data;
+        const { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments } = data;
 
         //----------------validation for title-------------//
         if (!title) return res.status(400).send({ status: false, mesage: "Title is required" })
