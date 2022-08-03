@@ -40,8 +40,15 @@ let uploadFile = async (file) => {
 
 const createProduct = async function (req, res) {
     try {
+<<<<<<< HEAD
+=======
 
+<<<<<<< HEAD
+>>>>>>> 322c15d997620aa61f69b5a93a43513dcbcc78f6
+        const data = req.Body;
+=======
     
+>>>>>>> a9d366c303ce3923352be1aecc41fd4e434c0aee
 
         if (!isValidRequest(data)) {
             return res.status(400).send({ status: false, message: "Please Enter your Details" })
@@ -106,6 +113,14 @@ const createProduct = async function (req, res) {
             let arr = availableSizes.split(",").map(el => el.trim())
             for (let availableSizes of arr) {
                 if (!["XS", "X", "S", "M", "L", "XL", "XXL"].includes(availableSizes)) return res.status(400).send({ status: false, message: "size parmeter can only take XS , X , S , M , L , XL , XXL these values" })
+<<<<<<< HEAD
+            }
+
+            data["availableSizes"] = arr
+        }
+            //---------------validation for installments--------------//
+            if (!Number(installments)) return res.status(400).send({ status: false, mesage: "Please enter valid installments" })
+=======
 
             }
             data["availableSizes"] = arr
@@ -129,14 +144,37 @@ const createProduct = async function (req, res) {
        }
        
         //--------------------------------------------------------//
+>>>>>>> 322c15d997620aa61f69b5a93a43513dcbcc78f6
 
-        let createProduct = await productModel.create(data)
-        return res.status(201).send({ status: true, message: "Success", data: createProduct })
+            if (Number(installments) <= 0) return res.status(400).send({ status: false, mesage: "installments is not valid" })
 
+<<<<<<< HEAD
+            //---------------upload productImage s3 files-------------//
+            files = req.files
+            let productImage;
+            if (files && files.length > 0) {
+                let uploadedFileURL = await uploadFile(files[0])
+                productImage = uploadedFileURL;
+            }
+            else {
+                return res.status(400).send({ message: "File link not created" })
+            }
+            //--------------------------------------------------------//
+
+            let createProduct = await productModel.create(data)
+            return res.status(201).send({ status: true, message: "Success", data: createProduct })
+
+        
+    } catch (err) {
+        return res.status(500).send({ status: false, message: err.massage })
+    }
+
+=======
 
     } catch (err) {
         return res.status(500).send({ status: false, message: err.massage })
    }
+>>>>>>> 322c15d997620aa61f69b5a93a43513dcbcc78f6
 }
 ///==========================Delete PRODUCT=====================///
 
@@ -181,8 +219,20 @@ const updateProduct = async function (req, res) {
 
         if (Object.keys(data).length === 0 && !files) return res.status(400).send({ status: false, message: "Provide the data in the body to update." })
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+    if (description) {
+        if (!isValidRequest(description)) return res.status(400).send({ status: false, message: "please provide data for description" })
+    }
+    if (price) {
+        if (!priceRegex.test(price)) return res.status(400).send({ status: false, message: "Enter valid price" })
+    }
+=======
+        if (description) {
+=======
         if (description)
         {
+>>>>>>> a9d366c303ce3923352be1aecc41fd4e434c0aee
             if (!isValidRequest(description)) return res.status(400).send({ status: false, message: "please provide data for description" })
         }
         if (price)
@@ -198,6 +248,7 @@ const updateProduct = async function (req, res) {
         {
             if (!isValidRequest(style)) return res.status(400).send({ status: false, message: "provide data in style" })
         }
+>>>>>>> 322c15d997620aa61f69b5a93a43513dcbcc78f6
 
         let productImage;
         if (files)
