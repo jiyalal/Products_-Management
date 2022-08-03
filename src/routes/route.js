@@ -22,9 +22,9 @@ router.delete('/products/:productId',productController.deleteProduct) // himashu
 
 //====================[CART API'S]============================
 
-router.post('/users/:userId/cart',cartController.createCart) //bhushan
-router.put('/users/:userId/cart',cartController.updateCart)  // jiyalal
-router.get('/users/:userId/cart',cartController.getCart)  // himanshu
+router.post('/users/:userId/cart',middleware.authenticate,middleware.authForParams,cartController.createCart) //bhushan
+router.put('/users/:userId/cart',middleware.authenticate,middleware.authForParams,cartController.updateCart)  // jiyalal
+// router.get('/users/:userId/cart',cartController.getCart)  // himanshu
 router.delete('/users/:userId/cart',cartController.deleteCart) //ritesh 
 
 //====================[ORDER API'S]=============================
