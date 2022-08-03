@@ -170,7 +170,6 @@ const updateCart = async function (req, res) {
         {
             return res.status(400).send({ status: false, message: `${productId} IS NOT VALID` })
         }
-
         let finalProdcut = await productModel.findById(productId)
 
         if (!finalProdcut)
@@ -191,56 +190,73 @@ const updateCart = async function (req, res) {
 
         }
         let finalCart = await cartModel.findById(cartId)
-        let items = finalCart.items
 
-        var product = items.find(e => e.productId);
         if (!finalCart)
         {
             return res.status(404).send({ status: false, message: "HEY..😐😐 CART NOT FOUND" })
 
         }
-        // let ProdcutInCart = await cartModel.findOne({ items: productId.productId })
+        // let prodcutInCart = await cartModel.findOne({ items: { $eleMatch: { productId: productId } } })
+        // var product = items.find(e => e.productId);
 
-        if (!product)
-        {
-            return res.status(404).send({ status: false, message: "HEY..😐😐 PRODCUT NOT FOUND IN CART" })
-        }
+        // if (!product)
+        // {
+        //     return res.status(404).send({ status: false, message: "HEY..😐😐 PRODCUT NOT FOUND IN CART" })
+        // }
         if (!(typeof removeProduct === "number" && removeProduct.toString().trim().length > 0))
         {
             return res.status(400).send({ status: false, message: "HEY..😐😐..PLEASE Valid PROFUCT TO REMOVE" })
         }
-        
+
 
         if ((removeProduct != 0) && (removeProduct != 1))
         {
             return res.status(400).send({ status: false, message: " REMOVEPRODUCT SHOULD BE 0 OR 1 " })
         }
-        let finalQuantity = finalCart.items.find(ele=>ele.productId)
-       
+        let finalQuantity = finalCart.items.find(ele => ele.productId.toString() === productId)
+
         if (removeProduct == 0)
         {
 
-            let totalAmount = finalCart.totalPrice-(finalProdcut.price*finalQuantity.quantity)
-          
-            console.log(totalAmount)
-
+            let totalAmount = finalCart.totalPrice - (finalProdcut.price * finalQuantity.quantity)
             let quantity = finalCart.totalItems - 1
-            let newCart = await cartModel.findOneAndUpdate({ _id: cartId }, { items: { productId: productId } }, { $set: { totalPrice: totalAmount, totalItems: quantity } }, { new: true })
-
+            let newCart = await cartModel.findOneAndUpdate({ _id: cartId }, { $pull: { items: { productId: productId } }, $set: { totalPrice: totalAmount, totalItems: quantity } }, { new: true })
 
             return res.status(200).send({ status: true, message: `PRODUCT HAS BEEN REMOVE FROM THE CART`, data: newCart })
         }
+        if (removeProduct == 1)
+        {
+            // console.log("coming in")
+            let totalAmount = finalCart.totalPrice - finalProdcut.price
+            let itemsArr = finalCart.items
+            for (let i = 0; i < itemsArr.length; i++)
+            {
+                if (itemsArr[i].productId.toString() === productId)
+                {
+                    itemsArr[i].quantity = itemsArr[i].quantity - 1
+                    if (itemsArr[i].quantity == 0)
+                    {
+                        // console.log("quantity has become 0 now.")
+                        var noOfItems = finalCart.totalItems - 1
+                        let newCart = await cartModel.findOneAndUpdate({ _id: cartId }, { $pull: { items: { productId: productId } }, $set: { totalPrice: totalAmount, totalItems: noOfItems } }, { new: true })
+                        return res.status(200).send({ status: true, message: 'Product has been removed from the cart', data: newCart })
+                    }
+                }
+            }
+            //    console.log("quantity is not 0.")
+            let data = await cartModel.findOneAndUpdate({ _id: cartId }, { totalPrice: totalAmount, items: itemsArr }, { new: true })
+            return res.status(200).send({ status: true, message: 'Product in the cart updated successfully.', data: data })
+        }
+    } catch(err){
 
-    } catch (err)
-    {
-        console.log(err)
     }
 
 
 
-
-
 }
+
+
+
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
