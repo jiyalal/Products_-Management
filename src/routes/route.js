@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const userController = require("../controller/userController")
 const productController = require("../controller/productController")
+const cartController=require("../controller/cartController")
 const middleware=require("../Middleware/commonMid")
 
 
@@ -21,14 +22,14 @@ router.delete('/products/:productId',productController.deleteProduct) // himashu
 
 //====================[CART API'S]============================
 
-router.post('/users/:userId/cart') //bhushan
-router.put('/users/:userId/cart')  // jiyalal
-router.get('/users/:userId/cart')  // himanshu
-router.delete('/users/:userId/cart') //ritesh 
+router.post('/users/:userId/cart',cartController.createCart) //bhushan
+router.put('/users/:userId/cart',cartController.updateCart)  // jiyalal
+router.get('/users/:userId/cart',cartController.getCart)  // himanshu
+router.delete('/users/:userId/cart',cartController.deleteCart) //ritesh 
 
 //====================[ORDER API'S]=============================
 
 router.post('/users/:userId/orders')  //Bhushan
-router.put('/users/:userId/orders')  //Ritesh
+//router.put('/users/:userId/orders',orderController.updateOrder)  //Ritesh
 
 module.exports = router
