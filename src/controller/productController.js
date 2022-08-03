@@ -117,6 +117,7 @@ const createProduct = async function (req, res) {
         if (Number(installments) <= 0) return res.status(400).send({ status: false, mesage: "installments is not valid" })
 
         //---------------upload productImage s3 files-------------//
+       
         files = req.files
         let productImage;
         if (files && files.length > 0) {
@@ -126,6 +127,7 @@ const createProduct = async function (req, res) {
         else {
             return res.status(400).send({ message: "File link not created" })
        }
+       
         //--------------------------------------------------------//
 
         let createProduct = await productModel.create(data)
@@ -161,7 +163,8 @@ const deleteProduct = async function (req, res) {
 //===========================[  UPDATE PRODUCT  ]======================================
 
 const updateProduct = async function (req, res) {
-    try {
+    try
+    {
         let productId = req.params.productId
         let data = req.body
         let files = req.files
@@ -178,41 +181,51 @@ const updateProduct = async function (req, res) {
 
         if (Object.keys(data).length === 0 && !files) return res.status(400).send({ status: false, message: "Provide the data in the body to update." })
 
-        if (description) {
+        if (description)
+        {
             if (!isValidRequest(description)) return res.status(400).send({ status: false, message: "please provide data for description" })
         }
-        if (price) {
+        if (price)
+        {
             if (!priceRegex.test(price)) return res.status(400).send({ status: false, message: "Enter valid price" })
         }
-        if (isFreeShipping) {
+        if (isFreeShipping)
+        {
             if (isFreeShipping != true)
                 return res.status(400).send({ status: false, message: "only true or false for isFreeShipping and must be boolean " })
         }
-        if (style) {
+        if (style)
+        {
             if (!isValidRequest(style)) return res.status(400).send({ status: false, message: "provide data in style" })
         }
 
         let productImage;
-        if (files) {
+        if (files)
+        {
 
-            if (files && files.length > 0) {
+            if (files && files.length > 0)
+            {
                 let uploadedFileURL = await uploadFile(files[0])
                 productImage = uploadedFileURL;
             }
-            else {
+            else
+            {
                 return res.status(400).send({ message: "File link not created" })
             }
 
-            if (availableSizes) {
+            if (availableSizes)
+            {
                 let arr = availableSizes.split(",").map(el => el.trim())
-                for (let availableSizes of arr) {
+                for (let availableSizes of arr)
+                {
                     if (!["XS", "X", "S", "M", "L", "XL", "XXL"].includes(availableSizes)) return res.status(400).send({ status: false, message: "size parmeter can only take XS , X , S , M , L , XL , XXL these values" })
 
                 }
                 data["availableSizes"] = arr
 
             }
-            if (installments) {
+            if (installments)
+            {
                 if (!Number(installments) || Number(installments) <= 0)
                     return res.status(400).send({ status: false, mesage: "Please enter valid installments" })
             }
@@ -227,7 +240,8 @@ const updateProduct = async function (req, res) {
                 { new: true })
             return res.status(200).send({ status: true, message: "Update data succesfully", data: update })
         }
-    } catch (err) {
+    } catch (err)
+    {
         return res.status(500).send({ status: false, message: err.massage })
     }
 }
@@ -249,6 +263,38 @@ const getProduct = async (req, res) => {
 
             if (product.length == 0) {
                 return res.status(404).send({ status: false, message: "HEY..🤨🤨 NO RESULT FOUND" })
+            }
+            else
+            {
+                Object.keys(filters).forEach(x => filters[x] = filters[x].trim())
+                let { size, name, priceGreaterThan, priceLessThan, sortPrice } = filters
+
+                if (size)
+                {
+                    if (size.includes(","))
+                    {
+                        let sizeArray = size.split(",").map(String).map(x => x.trim())
+                        for (let i = 0; i < sizeArray.length; i++)
+                        {
+                            if (["S", "XS", "M", "L", "XXL", "XL"].includes(sizeArray[i]))
+                            {
+                                filters['availableSizes'] = sizeArray
+                            }
+                        }
+
+                    }
+                }
+                if (name)
+                {
+                    if (!isValid(name))
+                    {
+                        return res.status(400).send({ status: false, message: "HEY..😐😐 PLEASE ENTER VALID NAME" })
+                    }
+                }
+                if (filters.price)
+                {
+
+                }
             }
             let sortedProduct = product.sort(function (a, b) {
                 var titleA = a.title.toUpperCase(); // ignore upper and lowercase
@@ -276,7 +322,9 @@ const getProduct = async (req, res) => {
             }
             if (filters.name) {
 
-            }
+
+
+
         }
         filters.isDeleted = false;
         let filtersProduct = await productModel.find(filters).select({
@@ -302,6 +350,7 @@ const getProduct = async (req, res) => {
             return res.status(200).send({ status: true, data: sortedProduct })
 
         }
+    }
 
 
     } catch (err) {
