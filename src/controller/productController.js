@@ -41,7 +41,7 @@ let uploadFile = async (file) => {
 const createProduct = async function (req, res) {
     try {
 
-        const data = req.body;
+    
 
         if (!isValidRequest(data)) {
             return res.status(400).send({ status: false, message: "Please Enter your Details" })
@@ -117,7 +117,7 @@ const createProduct = async function (req, res) {
         if (Number(installments) <= 0) return res.status(400).send({ status: false, mesage: "installments is not valid" })
 
         //---------------upload productImage s3 files-------------//
-       
+        const data = req.Body;
         files = req.files
         let productImage;
         if (files && files.length > 0) {
