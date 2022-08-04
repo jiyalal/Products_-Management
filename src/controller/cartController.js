@@ -4,6 +4,7 @@ const cartModel = require("../model/cartModel")
 const { isValidRequest, isValid, isValidObjectId, nameRegex, emailRegex, phoneRegex, passRegex, priceRegex } = require('../validators/validator');
 const { getProductById } = require("./productController");
 const productModel = require("../model/productModel");
+const mongoose = require('mongoose')
 
 const createCart = async function (req, res) {
     try
