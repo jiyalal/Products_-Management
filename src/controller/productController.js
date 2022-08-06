@@ -1,9 +1,10 @@
 const productModel = require("../model/productModel");
+// const validUrl = require('valid-url');
 const { isValidRequest, isValid, isValidObjectId, nameRegex, emailRegex, phoneRegex, passRegex, priceRegex } = require('../validators/validator')
 
 const aws = require("aws-sdk")
 const mongoose = require('mongoose')
-//const validator = require('validator')
+// const validator = require('validator')
 
 aws.config.update({
     accessKeyId: "AKIAY3L35MCRVFM24Q7U",
@@ -40,9 +41,7 @@ let uploadFile = async (file) => {
 
 const createProduct = async function (req, res) {
     try {
-
-    
-
+        const data = req.body;
         if (!isValidRequest(data)) {
             return res.status(400).send({ status: false, message: "Please Enter your Details" })
         }
@@ -117,7 +116,7 @@ const createProduct = async function (req, res) {
         if (Number(installments) <= 0) return res.status(400).send({ status: false, mesage: "installments is not valid" })
 
         //---------------upload productImage s3 files-------------//
-        const data = req.Body;
+       
         files = req.files
         let productImage;
         if (files && files.length > 0) {
@@ -135,7 +134,8 @@ const createProduct = async function (req, res) {
 
 
     } catch (err) {
-        return res.status(500).send({ status: false, message: err.massage })
+        console.log(err)
+        return res.status(500).send({ status: false, message: err })
    }
 }
 ///==========================Delete PRODUCT=====================///
@@ -200,19 +200,26 @@ const updateProduct = async function (req, res) {
         }
 
         let productImage;
-        if (files)
+        // if (files && files.length > 0) {
+        //     var uploadedFileURL = await aws.uploadFile(files[0]);
+        //     productImage = uploadedFileURL;
+        //     if (!validUrl.isUri(uploadedFileURL)) {
+        //         return res.status(400).send({ status: false, msg: 'invalid uploadFileUrl' })
+        //     }
+        // }
+        if (files && files.length > 0 )
         {
 
-            if (files && files.length > 0)
+            if (files )
             {
                 let uploadedFileURL = await uploadFile(files[0])
-                productImage = uploadedFileURL;
+                
             }
             else
             {
                 return res.status(400).send({ message: "File link not created" })
             }
-
+        }
             if (availableSizes)
             {
                 let arr = availableSizes.split(",").map(el => el.trim())
@@ -239,7 +246,7 @@ const updateProduct = async function (req, res) {
                 },
                 { new: true })
             return res.status(200).send({ status: true, message: "Update data succesfully", data: update })
-        }
+        
     } catch (err)
     {
         return res.status(500).send({ status: false, message: err.massage })
