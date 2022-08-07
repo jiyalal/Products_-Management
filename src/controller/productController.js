@@ -83,13 +83,13 @@ const createProduct = async function (req, res) {
         if (data.currencyId != "INR") return res.status(400).send({ status: false, message: "please provide currencyId only in INR" })
 
         //----------------validation for currencyFormat-----------//
-        if (!currencyFormat) return res.status(400).send({ status: false, mesage: "currencyFormat is required" })
+        // if (!currencyFormat) return res.status(400).send({ status: false, mesage: "currencyFormat is required" })
 
         if (!isValid(currencyFormat)) {
             return res.status(400).send({ status: false, message: "please provide valid currencyFormat" })
         }
 
-        if (data.currencyFormat != "₹") return res.status(400).send({ status: false, message: "please provide currencyId only in ₹" })
+        if (data.currencyFormat != "₹") return res.status(400).send({ status: false, message: "please provide currencyFormat only in ₹" })
 
         //-------------validation for isFreeShipping---------------//
         if (isFreeShipping) {
