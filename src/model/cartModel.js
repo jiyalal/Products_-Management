@@ -5,7 +5,7 @@ const cartModel = new mongoose.Schema(
 {
     userId: {type:ObjectId, ref:"User", required:true, unique:true,trim:true},
      items:[{
-        productId: { type: ObjectId, required: true, ref: "Product", trim: true },
+        productId: { type: ObjectId, required: true, ref: "Products", trim: true },
         quantity: { type: Number, required: true},
         _id: 0
            }],

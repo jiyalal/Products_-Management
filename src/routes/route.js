@@ -17,21 +17,21 @@ router.put('/user/:userId/profile',middleware.authenticate,middleware.authForPar
 
 //===================[ PRODUCT API'S]=========================
 router.post('/products',productController.createProduct) //rites
-router.get('/products',productController.getProduct) //jiya lal
+router.get('/products',productController.getProduct) //himashu
 router.get('/products/:productId',productController.getProductById)// jiya lal
 router.put('/products/:productId',productController.updateProduct) // bhushan
-router.delete('/products/:productId',productController.deleteProduct) // himashu
+router.delete('/products/:productId',productController.deleteProduct) // jiya lal
 
 //====================[CART API'S]============================
 
-router.post('/users/:userId/cart',cartController.createCart) //bhushan
-router.put('/users/:userId/cart',cartController.updateCart)  // jiyalal
-router.get('/users/:userId/cart',cartController.getCart)  // himanshu
-router.delete('/users/:userId/cart',cartController.deleteCart) //ritesh 
+router.post('/users/:userId/cart',middleware.authenticate,middleware.authForParams,cartController.createCart) //bhushan
+router.put('/users/:userId/cart',middleware.authenticate,middleware.authForParams,cartController.updateCart)  // jiyalal
+router.get('/users/:userId/cart',middleware.authenticate,middleware.authForParams,cartController.getCart)  // himanshu
+router.delete('/users/:userId/cart',middleware.authenticate,middleware.authForParams,cartController.deleteCart) //ritesh 
 
 //====================[ORDER API'S]=============================
 
-router.post('/users/:userId/orders',orderController.createOrder)  //Bhushan
-router.put('/users/:userId/orders',orderController.updateOrder)  //Ritesh
+router.post('/users/:userId/orders',middleware.authenticate,middleware.authForParams,orderController.createOrder)  //Himanshu
+router.put('/users/:userId/orders',middleware.authenticate,middleware.authForParams,orderController.updateOrder)  //Himanshu
  
 module.exports = router

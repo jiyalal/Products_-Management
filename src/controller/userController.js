@@ -59,15 +59,13 @@ const createUser = async function (req, res) {
         {
              return res.status(400).send({ message: "HEY 😐. PLEASE PROVIDE FILE LINK" })
         }
- 
-
-        if (!isValid(fname))
+        if (!isValid(fname)   || !nameRegex.test(fname))
         {
-            return res.status(400).send({ status: false, message: "please provide the first name" })
+            return res.status(400).send({ status: false, message: "please provide the valid first name" })
         }
-        if (!isValid(lname))
+        if (!isValid(lname)  || !nameRegex.test(lname))
         {
-            return res.status(400).send({ status: false, message: "please provide the last name" })
+            return res.status(400).send({ status: false, message: "please provide the valid last name" })
         }
         if (!emailRegex.test(email))
         {
@@ -131,13 +129,13 @@ const createUser = async function (req, res) {
         // {
         //     return res.status(400).send({ status: false, message: "PLEASE PROVIDE THE ADDRESS" })
         // }
-         if (!address.shipping || (address.shipping && (!address.shipping.street && !address.shipping.city && !address.shipping.pincode)))
+         if (!address.shipping || (!address.shipping.street || !address.shipping.city || !address.shipping.pincode))
          {
-             return res.status(400).send({ status: false, message: "PLEASE PROVIDE THE SHIPPING ADDRESS" })
+             return res.status(400).send({ status: false, message: "PLEASE PROVIDE Full  SHIPPING ADDRESS" })
          }
-        if (!address.billing || (address.billing && (!address.billing.street || !address.billing.city || !address.billing.pincode)))
+        if (!address.billing  || (!address.billing.street || !address.billing.city || !address.billing.pincode))
         {
-            return res.status(400).send({ status: false, message: "PLEASE PROVIDE THE BILLING ADDRESS" })
+            return res.status(400).send({ status: false, message: "PLEASE PROVIDE Full BILLING ADDRESS" })
         }
        
         const user = {
@@ -243,6 +241,7 @@ const updateUser = async function (req, res) {
         {
             return res.status(404).send({ status: false, message: " No such data found " })
         }
+
         let reqData = req.body;
         let { fname, lname, email, phone, password, address } = reqData
         files = req.files
@@ -365,19 +364,17 @@ const updateUser = async function (req, res) {
             reqData.address.billing = billing2
         }
 
-        if (files.length != 0)
-        {
+      
             if (files && files.length > 0)
             {
                 let uploadedFileURL = await uploadFile(files[0])
                 profileImage = uploadedFileURL;
+                
                 reqData.profileImage = profileImage
             }
-            else
-            {
-                return res.status(400).send({ message: "Profile Image not available" })
-            }
-        }
+            
+       if(Object.keys(reqData).includes("profileImage")){
+        if(!reqData.profileImage)return res.status(400).send({ message: "Profile Image not provided" })}
         // reqData.updatedAt = Date.now()
 
 

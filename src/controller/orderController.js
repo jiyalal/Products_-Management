@@ -1,8 +1,8 @@
 
-const cartModel = require('../models/cartModel')
-const userModel = require('../models/userModel')
-const validators = require("../validator/validtor");
-const orderModel = require('../models/orderModel');
+const cartModel = require('../model/cartModel')
+const userModel = require('../model/userModel')
+const validators = require("../validators/validator");
+const orderModel = require('../model/orderModel');
 
 let createOrder = async (req, res) => {
     try {
@@ -54,13 +54,13 @@ let createOrder = async (req, res) => {
         }
 
         //------[Authorization]
-        let userAccessing = req.validToken.userId;
-        if (userId != userAccessing) {
-            return res.status(403).send({
-                status: false,
-                message: "User not authorised",
-            });
-        }
+        // let userAccessing = req.validToken.userId;
+        // if (userId != userAccessing) {
+        //     return res.status(403).send({
+        //         status: false,
+        //         message: "User not authorised",
+        //     });
+        // }
         //------[create]-----
         let items = findCart.items
         let totalQuantity = 0
@@ -84,6 +84,7 @@ let createOrder = async (req, res) => {
             totalQuantity,
             cancellable
         }
+        if (findCart.totalPrice==0){return res.status(400).send({ status: false, message: 'cart is empty' })}
         let create = await orderModel.create(order)
 
         //------[ Cart Empty ]
@@ -100,6 +101,7 @@ let createOrder = async (req, res) => {
         })
 
     } catch (err) {
+        console.log(err)
         return res.status(500).send({ status: false, message: err.stack })
     }
 
@@ -137,14 +139,14 @@ let updateOrder = async function (req, res) {
                 message: "User not found",
             });
         }
-        //------[Authorization]
-        let userAccessing = req.validToken.userId;
-        if (userId != userAccessing) {
-            return res.status(403).send({
-                status: false,
-                message: "User not authorised",
-            });
-        }
+        // //------[Authorization]
+        // let userAccessing = req.validToken.userId;
+        // if (userId != userAccessing) {
+        //     return res.status(403).send({
+        //         status: false,
+        //         message: "User not authorised",
+        //     });
+        // }
 
         //------[OrderId]
         if (!validators.isValidField(orderId))
@@ -181,7 +183,7 @@ let updateOrder = async function (req, res) {
             })
         }
         if (status == 'canceled') {
-            if (findOrder.canceled === true) {
+            if (findOrder.cancellable == true) {
                 findOrder.status = 'canceled'
             } else {
                 return res.status(400).send({
