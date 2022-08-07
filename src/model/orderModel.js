@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const orderModel = new mongoose.Schema({
     userId: {type:ObjectId, ref:"User", required:true, unique:true},
@@ -10,7 +11,7 @@ const orderModel = new mongoose.Schema({
     totalItems: {type:Number,required:true},// comment: "Holds total number of items in the cart"
     totalQuantity: {type:Number,required:true},//, comment: "Holds total number of quantity in the cart"},
     cancellable: {type:Boolean, default: true},
-    status: {type:String, default: 'pending', enum:[pending, completed, cancled]},
+    status: {type:String,enum:["pending", "completed", "cancled"] ,default: 'pending'},
     deletedAt: {type:Date},            // when the document is deleted
     isDeleted: {type:Boolean, default: false},
     createdAt: {type:Date},

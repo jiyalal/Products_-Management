@@ -1,7 +1,7 @@
 
 const UserModel = require("../model/userModel")
 const cartModel = require("../model/cartModel")
-const { isValidRequest, isValid, isValidObjectId, nameRegex, emailRegex, phoneRegex, passRegex, priceRegex } = require('../validators/validator');
+const { isValidRequest, isValid, isValidObjectId } = require('../validators/validator');
 const { getProductById } = require("./productController");
 const productModel = require("../model/productModel");
 const mongoose = require('mongoose')
@@ -11,10 +11,8 @@ const createCart = async function (req, res) {
     {
         const userIdFromParams = req.params.userId
         const data = req.body
-        let { items } = data
-        var product = items.find(e => e.productId);
-        const quantity = product.quantity
-        const productId = product.productId
+        let {userId,items} = data
+        
         //Validate body 
         if (!isValidRequest(data))
         {
@@ -28,6 +26,12 @@ const createCart = async function (req, res) {
         {
             return res.status(400).send({ status: false, msg: "userId is invalid" });
         }
+        if(!userId)return res.status(400).send({status:false,message:"please provide userId"})
+        if(!items) return res.status(400).send({status:false,message:"please provide items"})
+        var product= items.find(e => e.productId);
+        const quantity=product.quantity
+        const productId=product.productId
+       
 
         const userByuserId = await UserModel.findById(userIdFromParams);
 
@@ -99,15 +103,13 @@ const createCart = async function (req, res) {
             return res.status(201).send({ status: true, message: "cart created successfully", data: createCart })
         }
 
-        if (isOldUser)
-        {
+        else{
             const newTotalPrice = (isOldUser.totalPrice) + ((findProduct.price) * quantity)
             let flag = 0;
             const items = isOldUser.items
-            for (let i = 0; i < items.length; i++)
-            {
-                if (items[i].productId.toString() === productId)
-                {
+            // console.log(items.length)
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].productId.toString() === productId) {
                     console.log("productId are similars")
                     items[i].quantity += quantity
                     var newCartData = {
@@ -119,10 +121,7 @@ const createCart = async function (req, res) {
                     const saveData = await cartModel.findOneAndUpdate(
                         { userId: userIdFromParams },
                         newCartData, { new: true })
-                    return res.status(201).send({
-                        status: true,
-                        message: "product added to the cart successfully", data: saveData
-                    })
+                    return res.status(201).send({status: true,message: "product added to the cart successfully", data: saveData})
                 }
             }
             if (flag === 0)
@@ -134,7 +133,7 @@ const createCart = async function (req, res) {
                 }
                 const saveData = await cartModel.findOneAndUpdate(
                     { userId: userIdFromParams },
-                    { $addToSet: { items: addItems }, $inc: { totalItems: 1, totalPrice: ((findProduct.price) * quantity) } },
+                    { $Set: { items: addItems }, $inc: { totalItems: 1, totalPrice: ((findProduct.price) * quantity) } },
                     { new: true }).select({ "items._id": 0 })
                 return res.status(201).send({ status: true, message: "product added to the cart successfully", data: saveData })
             }
@@ -149,8 +148,9 @@ const createCart = async function (req, res) {
 const updateCart = async function (req, res) {
     try
     {
+        let data=req.body
         let userId = req.params.userId
-
+        if(!isValidRequest(data)) return res.status(400).send({ status: false, message: "no body" })
         if (!isValidObjectId(userId))
         {
             return res.status(400).send({ status: false, message: `${userId} IS NOT VALID` })
@@ -162,7 +162,7 @@ const updateCart = async function (req, res) {
             return res.status(404).send({ status: false, message: "no document exsist in this userId" })
         }
 
-        let { productId, cartId, removeProduct } = req.body
+        let { cartId,productId,removeProduct } = data
 
         // if (!isValidRequest(productId)){
         //     return res.status(400).send({status:false,message:"please provide prodcutId"})

@@ -6,6 +6,13 @@ const isValid = function (value) {
     if (typeof value === 'string' && value.trim().length === 0) return false
     return true;
 }
+const isValidField = function (value) {
+  if (typeof value === "undefined" || value === null) return false;
+
+  if (typeof value === "string" && value.trim().length === 0) return false;
+
+  return true;
+};
 
 const isValidRequest = function (data) {
     if (Object.keys(data).length == 0) return false;
@@ -30,4 +37,4 @@ let passRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,15}
 
 
 // exporting the variables defined in the module
-module.exports = { isValid,nameRegex,isValidObjectId, emailRegex, phoneRegex, passRegex,isValidRequest,priceRegex}
+module.exports = {isValidField, isValid,nameRegex,isValidObjectId, emailRegex, phoneRegex, passRegex,isValidRequest,priceRegex}
