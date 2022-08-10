@@ -232,7 +232,7 @@ const updateUser = async function (req, res) {
     {
         let userId = req.params.userId
 
-        if (userId.length != 24)
+        if (!isValidObjectId(userId))
         {
             return res.status(400).send({ status: false, message: " UserId Invalid " })
         }

@@ -143,7 +143,7 @@ const createProduct = async function (req, res) {
 const deleteProduct = async function (req, res) {
     try {
         const productId = req.params.productId
-        if (productId.length != 24) return res.status(400).send({ status: false, message: `${productId} is not a valid ObjectId😥😥` })
+        if (!isValidObjectId(productId)) return res.status(400).send({ status: false, message: `${productId} is not a valid ObjectId😥😥` })
         const prod = await productModel.findOne({ _id: productId, isDeleted: false })
         if (!prod) {
             return res.status(404).send({ status: false, message: "product is not available" })
